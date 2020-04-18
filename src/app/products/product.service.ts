@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IProduct } from './products';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -22,6 +22,13 @@ export class ProductService {
             );
     }
 
+    getProduct(id: number): Observable<IProduct | undefined> {
+        return this.getProducts()
+            .pipe(
+                map((products: IProduct[]) => products.find(p => p.productId === id))
+            );
+    }
+
     handleError(err: HttpErrorResponse) {
         let errorMessage = '';
 
@@ -30,7 +37,7 @@ export class ProductService {
         } else {
             errorMessage = `Server returned code: ${err.status}, error message is: ${err.message}`;
         }
-        
+
         console.error(errorMessage);
         return throwError(errorMessage);
     }
